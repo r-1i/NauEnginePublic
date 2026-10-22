@@ -4,8 +4,8 @@ rem Usage: tools\configure_vs2022.bat   (can be run from any directory)
 
 setlocal
 
-rem Configure preset from CMakePresets.json (change here to use another preset, e.g. win_vs2022_x64_dll).
-set "PRESET=win_vs2022_x64"
+rem CONFIGURE_PRESET and BUILD_PRESET are shared with build_debug_vs2022.bat
+call "%~dp0vs2022_config.bat"
 
 rem Repo root = parent of this script's folder
 cd /d "%~dp0.."
@@ -34,8 +34,8 @@ if not exist "%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" (
 
 rem Configure
 
-echo [INFO] Configuring preset "%PRESET%"...
-cmake --preset "%PRESET%"
+echo [INFO] Configuring preset "%CONFIGURE_PRESET%"...
+cmake --preset "%CONFIGURE_PRESET%"
 if errorlevel 1 (
     echo [ERROR] CMake configure failed, see the output above.
     exit /b %errorlevel%

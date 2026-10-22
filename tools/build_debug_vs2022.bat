@@ -5,8 +5,8 @@ rem Usage: tools\build_debug_vs2022.bat   (can be run from any directory)
 
 setlocal
 
-set "CONFIGURE_PRESET=win_vs2022_x64"
-set "BUILD_PRESET=VS Debug"
+rem CONFIGURE_PRESET and BUILD_PRESET are shared with configure_vs2022.bat
+call "%~dp0vs2022_config.bat"
 
 rem Repo root = parent of this script's folder
 cd /d "%~dp0.."
