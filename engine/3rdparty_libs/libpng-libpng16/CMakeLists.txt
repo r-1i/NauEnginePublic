@@ -1015,7 +1015,24 @@ endfunction()
 # Nau: zlib is provided by the zlib-ng target instead of find_package(ZLIB),
 # so ZLIB_INCLUDE_DIRS is empty. genout.cmake needs it to preprocess pnglibconf
 # when AWK is available (e.g. configuring from Git Bash).
-get_target_property(ZLIB_INCLUDE_DIRS zlib-ng SOURCE_DIR)
+if(TARGET zlib-ng)
+  get_target_property(_ZLIB_INTERFACE_DIRS zlib-ng INTERFACE_INCLUDE_DIRECTORIES)
+  if(_ZLIB_INTERFACE_DIRS)
+    set(ZLIB_INCLUDE_DIRS "")
+    foreach(_dir IN LISTS _ZLIB_INTERFACE_DIRS)
+      if(_dir MATCHES "^\\$<BUILD_INTERFACE:(.+)>$")
+        list(APPEND ZLIB_INCLUDE_DIRS "${CMAKE_MATCH_1}")
+      elseif(NOT _dir MATCHES "^\\$<")
+        list(APPEND ZLIB_INCLUDE_DIRS "${_dir}")
+      endif()
+    endforeach()
+  endif()
+  if(NOT ZLIB_INCLUDE_DIRS)
+    message(WARNING "libpng: no include directories found on zlib-ng, pnglibconf generation may fail to find zlib.h")
+  endif()
+else()
+  message(WARNING "libpng: zlib-ng target not found, pnglibconf generation may fail to find zlib.h")
+endif()
 
 # Create source generation scripts.
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake/genchk.cmake.in
